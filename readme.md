@@ -1,5 +1,5 @@
 # Sitecore.Support.139071
-Allow suppressing validation in Sitecore XP
+Allows suppressing validation in Sitecore XP
 
 ## License  
 This patch is licensed under the [Sitecore Corporation A/S License for GitHub](https://github.com/sitecoresupport/Sitecore.Support.139071/blob/master/LICENSE).  
