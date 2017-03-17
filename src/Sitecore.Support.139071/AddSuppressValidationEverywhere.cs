@@ -33,34 +33,75 @@ using Sitecore.Web.Configuration;
 using Sitecore.Web.UI.HtmlControls;
 using Sitecore.Web.UI.Sheer;
 using Sitecore.Xml;
+using Sitecore.CodeDom.Scripts;
 using FieldEditor = Sitecore.Shell.Applications.WebEdit.Commands.FieldEditor;
 using FieldEditorOptions = Sitecore.Shell.Applications.ContentEditor.FieldEditorOptions;
 using FieldInfo = System.Reflection.FieldInfo;
+using Sitecore.Abstractions;
+using Sitecore.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using Sitecore.Shell.Framework.Commands;
+
+
 
 namespace Sitecore.Support.ExperienceEditor.Speak.Ribbon.Requests
 {
+
     public class FieldValidators
     {
+        internal static readonly Lazy<BaseValidatorManager> Instance = new Lazy<BaseValidatorManager>(() => ServiceLocator.ServiceProvider.GetRequiredService<BaseValidatorManager>());
+
+        private static List<Field> ConvertToFields(IEnumerable<FieldDescriptor> fields)
+        {
+            List<Field> list = new List<Field>();
+            foreach (FieldDescriptor current in fields)
+            {
+                Item item = Database.GetItem(current.ItemUri);
+                if (item != null)
+                {
+                    Field field = item.Fields[current.FieldID];
+                    if (field != null)
+                    {
+                        list.Add(field);
+                    }
+                }
+            }
+            return list;
+        }
+
+        private static ListString GetSuppressedRules(Item item)
+        {
+            string text = item["__Suppressed Validation Rules"];
+            if (!string.IsNullOrEmpty(text))
+            {
+                return new ListString(text);
+            }
+            return new ListString();
+        }
+
         public static ValidatorCollection GetFieldsValidators(ValidatorsMode mode, IEnumerable<FieldDescriptor> fields, Database database)
         {
             Assert.ArgumentNotNull(fields, "fields");
             Assert.ArgumentNotNull(database, "database");
             ValidatorCollection validatorCollection = new ValidatorCollection();
-            Type typeFromHandle = typeof(ValidatorManager);
-            MethodInfo method = typeFromHandle.GetMethod("ConvertToFields", BindingFlags.Static | BindingFlags.NonPublic);
-            MethodInfo method2 = typeFromHandle.GetMethod("BuildFieldValidators", BindingFlags.Static | BindingFlags.NonPublic, Type.DefaultBinder, new Type[]
+            object ob = new object();
+            Type typeFromHandle = typeof(DefaultValidatorManager);
+
+            MethodInfo method = typeFromHandle.GetMethod("ConvertToFields", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo method2 = typeFromHandle.GetMethod("BuildFieldValidators", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic, Type.DefaultBinder, new Type[]
             {
                 typeof(ValidatorsMode),
                 typeof(ValidatorCollection),
                 typeof(IEnumerable<Field>),
-                typeof(Database)
-            }, null);
-            MethodInfo method3 = typeFromHandle.GetMethod("GetSuppressedRules", BindingFlags.Static | BindingFlags.NonPublic);
-            List<Field> list = (List<Field>)method.Invoke(null, new object[]
+               typeof(Database)
+              }, null);
+            MethodInfo method3 = typeFromHandle.GetMethod("GetSuppressedRules", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic);
+            List<Field> list = (List<Field>)method.Invoke(Instance.Value, new object[]
             {
                 fields
             });
-            method2.Invoke(null, new object[]
+
+            method2.Invoke(Instance.Value, new object[]
             {
                 mode,
                 validatorCollection,
@@ -71,10 +112,7 @@ namespace Sitecore.Support.ExperienceEditor.Speak.Ribbon.Requests
             foreach (FieldDescriptor current in fields)
             {
                 Item item2 = Database.GetItem(current.ItemUri);
-                ListString listString = (ListString)method3.Invoke(null, new object[]
-                {
-                    item2
-                });
+                ListString listString = (ListString)method3.Invoke(Instance.Value, new object[] { item2 });
                 if (listString.Any<string>())
                 {
                     suppressedValidators.Add(new ValidationSupression
@@ -85,10 +123,12 @@ namespace Sitecore.Support.ExperienceEditor.Speak.Ribbon.Requests
                     });
                 }
             }
+
             if (suppressedValidators.Count > 0)
             {
+
                 foreach (BaseValidator current2 in (from validator in validatorCollection
-                                                    where suppressedValidators.Any((ValidationSupression sv) => validator.ValidatorID.ToString() == sv.ValidatorId)
+                                                    where suppressedValidators.Any((ValidationSupression sv) => validator.ValidatorID.ToString() == database.GetItem(sv.ValidatorId).ID.ToString())
                                                     where suppressedValidators.Any((ValidationSupression sv) => sv.ItemId == validator.ItemUri.ItemID.ToString())
                                                     where suppressedValidators.Any((ValidationSupression sv) => sv.FieldId == validator.FieldID.ToString())
                                                     select validator).ToList<BaseValidator>())
@@ -926,7 +966,7 @@ namespace Sitecore.Support.Shell.Applications.ContentManager
         /// <returns>
         /// The validators.
         /// </returns>
-        protected  Sitecore.Data.Validators.ValidatorCollection BuildValidators(ValidatorsMode mode)
+        protected Sitecore.Data.Validators.ValidatorCollection BuildValidators(ValidatorsMode mode)
         {
             if (this.Options.Fields.Count == 0)
             {
@@ -940,11 +980,12 @@ namespace Sitecore.Support.Shell.Applications.ContentManager
             Database database = Factory.GetDatabase(this.Options.Fields.First<FieldDescriptor>().ItemUri.DatabaseName);
             ValidatorCollection collectionWithCorrectSuppression = FieldValidators.GetFieldsValidators(mode, this.Options.Fields, database);
 
-          /*  MethodInfo method1 = typeof(ValidatorManager).GetMethods(BindingFlags.NonPublic|BindingFlags.Static).Where(mi=>mi.Name=="BuildFieldValidators").Where(mi=>mi.GetParameters().Length==4).FirstOrDefault();
-            method1.Invoke(null, new object[] { mode, collectionWithCorrectSuppression, this.Options.Fields, database });*/
-            
-            MethodInfo method2 = typeof(ValidatorManager).GetMethods(BindingFlags.NonPublic | BindingFlags.Static).Where(mi => mi.Name == "PostprocessValidatorsForContentEditor").Where(mi => mi.GetParameters().Length == 4).FirstOrDefault();
-            method2.Invoke(null, new object[] { this.ValidatorsKey, safeDictionary,mode, collectionWithCorrectSuppression });
+            /*  MethodInfo method1 = typeof(ValidatorManager).GetMethods(BindingFlags.NonPublic|BindingFlags.Static).Where(mi=>mi.Name=="BuildFieldValidators").Where(mi=>mi.GetParameters().Length==4).FirstOrDefault();
+              method1.Invoke(null, new object[] { mode, collectionWithCorrectSuppression, this.Options.Fields, database });*/
+            // MethodInfo method = typeFromHandle.GetMethod("ConvertToFields", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic);
+
+            MethodInfo method2 = typeof(DefaultValidatorManager).GetMethod("PostprocessValidatorsForContentEditor", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic);
+            method2.Invoke(FieldValidators.Instance.Value, new object[] { this.ValidatorsKey, safeDictionary, mode, collectionWithCorrectSuppression });
 
 
             return collectionWithCorrectSuppression;
