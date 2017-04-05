@@ -57,67 +57,28 @@ namespace Sitecore.Support.Pipelines.Save
             }
 
             Sitecore.Pipelines.Save.SaveArgs pipArgs = args as Sitecore.Pipelines.Save.SaveArgs;
-            if (pipArgs == null)
-            {
-                Log.Error("Sitecore.Support.139071 : Error, pipArgs == null", this);
-                return;
-            }
-            if (pipArgs.Items == null)
-            {
-                Log.Error("Sitecore.Support.139071 : Error, pipArgs.Items == null", this);
-                return;
-            }
+            Assert.ArgumentNotNull(pipArgs.Items, "pipArgs.Items");
             //Get All Validators
             ValidatorCollection allValidators = ValidatorManager.GetValidators(ValidatorsMode.ValidatorBar, formValue);
-            if (allValidators == null)
-            {
-                Log.Error("Sitecore.Support.139071 : Error, allValidators == null", this);
-                return;
-            }
             Database db = Database.GetDatabase("master");
-            if (db == null)
-            {
-                Log.Error("Sitecore.Support.139071 : Error, masterDb == null", this);
-                return;
-            }
+            Assert.ArgumentNotNull(db, "master db");
             Item currItem = db.GetItem(pipArgs.Items[0].ID);
             if (currItem == null)
             {
                 currItem = Sitecore.Context.Database.GetItem(pipArgs.Items[0].ID);
-                if (currItem == null)
-                {
-                    Log.Error("Sitecore.Support.139071 : Error, can't get currItem", this);
-                    return;
-                }
             }
+            Assert.ArgumentNotNull(currItem, "current Item");
             //List with the Suppressed validators IDs
             List<ID> supValidatorItems = new List<ID>();
 
             //Final Validators collection
             ValidatorCollection validators = new ValidatorCollection();
+            if (currItem.Fields["__Suppressed validation rules"] == null) return;
 
-            if (currItem.Fields["__Suppressed validation rules"] == null)
-            {
-                return;
-            }
-            if (currItem.Database == null)
-            {
-                Log.Error("Sitecore.Support.139071 : Error, currItem.Database = null", this);
-                return;
-            }
             if (!String.IsNullOrEmpty(currItem.Fields["__Suppressed validation rules"].Value))
             {
                 string[] supressedValidations = currItem.Fields["__Suppressed validation rules"].Value.Split('|');
-                if (supressedValidations == null)
-                {
-                    Log.Error("Sitecore.Support.139071 : Error, can't get supressedValidations rules", this);
-                    return;
-                }
-                if (Database.GetDatabase("core") == null)
-                {
-                    Log.Error("Sitecore.Support.139071 : Error, can't get Core Db", this);
-                    return;
-                }
+               
                 if (supressedValidations.Length > 1)
                 {
                     foreach (string str in supressedValidations)
@@ -126,7 +87,7 @@ namespace Sitecore.Support.Pipelines.Save
                         {
                             supValidatorItems.Add(Database.GetDatabase("core").GetItem(str).ID ?? currItem.Database.GetItem(str).ID);
                         }
-                        catch (Exception ex)
+                        catch (NullReferenceException ex)
                         {
                             Log.Error("Sitecore.Support.139071 : Error, "+ ex.Message, this);
                             return;
@@ -139,7 +100,7 @@ namespace Sitecore.Support.Pipelines.Save
                     {
                         supValidatorItems.Add(Database.GetDatabase("core").GetItem(supressedValidations[0]).ID ?? currItem.Database.GetItem(supressedValidations[0]).ID);
                     }
-                    catch (Exception ex)
+                    catch (NullReferenceException ex)
                     {
                         Log.Error("Sitecore.Support.139071 : Error, " + ex.Message, this);
                         return;
