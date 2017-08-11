@@ -47,19 +47,23 @@
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
       <HintPath>..\..\..\..\..\inetpub\wwwroot\sc82u3\Website\bin\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
-    <Reference Include="Sitecore.Client">
-      <HintPath>..\..\..\..\..\inetpub\wwwroot\sc82u3\Website\bin\Sitecore.Client.dll</HintPath>
+    <Reference Include="Sitecore.Client, Version=10.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SC.Sitecore.Client.8.2.3\lib\Sitecore.Client.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="Sitecore.ExperienceEditor">
-      <HintPath>..\..\..\..\..\inetpub\wwwroot\sc82u3\Website\bin\Sitecore.ExperienceEditor.dll</HintPath>
+    <Reference Include="Sitecore.ExperienceEditor, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SC.Sitecore.ExperienceEditor.8.2.3\lib\Sitecore.ExperienceEditor.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="Sitecore.ExperienceEditor.Speak">
-      <HintPath>..\..\..\..\..\inetpub\wwwroot\sc82u3\Website\bin\Sitecore.ExperienceEditor.Speak.dll</HintPath>
+    <Reference Include="Sitecore.ExperienceEditor.Speak, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SC.Sitecore.ExperienceEditor.Speak.8.2.3\lib\Sitecore.ExperienceEditor.Speak.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="Sitecore.ExperienceEditor.Speak.Ribbon">
-      <HintPath>..\..\..\..\..\inetpub\wwwroot\sc82u3\Website\bin\Sitecore.ExperienceEditor.Speak.Ribbon.dll</HintPath>
+    <Reference Include="Sitecore.ExperienceEditor.Speak.Ribbon, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SC.Sitecore.ExperienceEditor.Speak.Ribbon.8.2.3\lib\Sitecore.ExperienceEditor.Speak.Ribbon.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="Sitecore.Kernel">
+    <Reference Include="Sitecore.Kernel, Version=10.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SC.Sitecore.Kernel.8.2.3\lib\Sitecore.Kernel.dll</HintPath>
       <Private>False</Private>
     </Reference>
