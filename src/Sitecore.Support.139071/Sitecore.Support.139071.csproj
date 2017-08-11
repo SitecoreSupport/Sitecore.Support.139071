@@ -41,11 +41,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Extensions.DependencyInjection">
-      <HintPath>..\..\..\..\..\inetpub\wwwroot\sc82u3\Website\bin\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\inetpub\wwwroot\sc82u3\Website\lib\Microsoft.Extensions.DependencyInjection.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
-      <HintPath>..\..\..\..\..\inetpub\wwwroot\sc82u3\Website\bin\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\inetpub\wwwroot\sc82u3\Website\lib\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Sitecore.Client, Version=10.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SC.Sitecore.Client.8.2.3\lib\Sitecore.Client.dll</HintPath>
@@ -82,6 +84,8 @@
     <Content Include="App_Config\Include\zzz\Sitecore.Support.139071.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="lib\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+    <Content Include="lib\Microsoft.Extensions.DependencyInjection.dll" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
