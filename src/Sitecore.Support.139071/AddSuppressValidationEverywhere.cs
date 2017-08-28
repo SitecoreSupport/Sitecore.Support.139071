@@ -119,14 +119,30 @@ namespace Sitecore.Support.ExperienceEditor.Speak.Ribbon.Requests
 
       if (suppressedValidators.Count > 0)
       {
+        //foreach (BaseValidator current2 in (from validator in validatorCollection
+        //                                    where suppressedValidators.Any((ValidationSupression sv) => sv.ValidatorId.Contains(validator.ValidatorID.ToString()))
+        //                                      && suppressedValidators.Any((ValidationSupression sv) => sv.ItemId == validator.ItemUri.ItemID.ToString())
+        //                                      && suppressedValidators.Any((ValidationSupression sv) => sv.FieldId == validator.FieldID.ToString())
+        //                                    select validator).ToList<BaseValidator>())
+        //{
+        //  validatorCollection.Remove(current2);
+        //}
 
-        foreach (BaseValidator current2 in (from validator in validatorCollection
-                                            where suppressedValidators.Any((ValidationSupression sv) => sv.ValidatorId.Contains(validator.ValidatorID.ToString()))
-                                            where suppressedValidators.Any((ValidationSupression sv) => sv.ItemId == validator.ItemUri.ItemID.ToString())
-                                            where suppressedValidators.Any((ValidationSupression sv) => sv.FieldId == validator.FieldID.ToString())
-                                            select validator).ToList<BaseValidator>())
+        List<BaseValidator> validatorsToRemove = new List<BaseValidator>();
+
+        foreach (var sv in suppressedValidators)
         {
-          validatorCollection.Remove(current2);
+          foreach (BaseValidator validator in validatorCollection)
+          {
+            if (sv.ValidatorId.Contains(validator.ValidatorID.ToString()) && sv.ItemId == validator.ItemUri.ItemID.ToString() && sv.FieldId == validator.FieldID.ToString())
+            {
+              validatorsToRemove.Add(validator);
+            }
+          }
+        }
+        foreach (var item in validatorsToRemove)
+        {
+          validatorCollection.Remove(item);
         }
       }
       return validatorCollection;

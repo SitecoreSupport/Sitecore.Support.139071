@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\sc82u3t488837.pubxml" />
     <None Include="web.config" />
   </ItemGroup>
   <PropertyGroup>
